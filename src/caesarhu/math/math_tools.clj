@@ -1,4 +1,4 @@
-(ns caesarhu.math-tools
+(ns caesarhu.math.math-tools
   (:require [clojure.math.numeric-tower :refer :all]))
 
 (defn square?
@@ -61,3 +61,8 @@
   (reduce (fn [acc x]
             (lcm acc x))
           xs))
+
+(defn palindrome?
+  [n]
+  (let [ds (digits n)]
+    (= ds (reverse ds))))
