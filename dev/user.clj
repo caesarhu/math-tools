@@ -1,3 +1,4 @@
 (ns user
-  (:require [caesarhu.math-tools :refer :all]))
+  (:require [caesarhu.math.math-tools :refer :all]
+            [fastmath.core :as m]))
 
