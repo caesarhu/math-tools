@@ -66,3 +66,13 @@
   [n]
   (let [ds (digits n)]
     (= ds (reverse ds))))
+
+(defn sqrt-continued-fraction [n]
+  (let [[a0 r] (exact-integer-sqrt n)]
+    (if (zero? r)
+      [a0]
+      (loop [m 0, d 1, a a0, acc [a0]]
+        (if (= a (* 2 a0))
+          acc
+          (let [m (- (* d a) m), d (/ (- n (* m m)) d), a (quot (+ a0 m) d)]
+            (recur m d a (conj acc a))))))))
