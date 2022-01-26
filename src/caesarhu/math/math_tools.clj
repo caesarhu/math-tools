@@ -11,7 +11,7 @@
    (if (zero? n) [0]
        (loop [n (abs n) result []]
          (let [q (quot n base)]
-           (if (zero? n) result (recur q (cons (- n (* q base)) result)))))))
+           (if (zero? n) result (recur q (cons (int (- n (* q base))) result)))))))
   ([n]
    (digits n 10)))
 
