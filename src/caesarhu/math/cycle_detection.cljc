@@ -27,11 +27,11 @@
         (if (= hare x0)
           meet
           (let [start (loop [tortoise x0
-                             hare meet]
+                             hare hare]
                         (if (= tortoise hare) hare
                             (recur (f tortoise) (f hare))))
-                length (loop [tortoise (f x0)
-                              hare (f2 x0)
+                length (loop [tortoise (f start)
+                              hare (f2 start)
                               counter 1]
                          (if (= tortoise hare) counter
                              (recur (f tortoise) (f2 hare) (inc counter))))]
