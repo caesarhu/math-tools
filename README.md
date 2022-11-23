@@ -17,12 +17,10 @@ cycle-detection: cycle detection algorithms
 pell-equation: Pell's equation algorithms  
 polynomial: some polynomial algorithms
 
-```clojure
-
-```
+refer to API documents
 
 ## License
 
 Copyright © 2022 Shun
 
-Distributed under the Eclipse Public License version 1.0.
+Distributed under the Eclipse Public License version 2.0.

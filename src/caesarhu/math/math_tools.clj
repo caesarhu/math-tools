@@ -1,5 +1,5 @@
 (ns caesarhu.math.math-tools
-  (:require [clojure.math.numeric-tower :refer :all]))
+  (:require [clojure.math.numeric-tower :refer :all :exclude [abs]]))
 
 (defn square?
   "Is n a square number?"
