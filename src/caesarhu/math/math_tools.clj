@@ -7,15 +7,20 @@
   (-> n exact-integer-sqrt last zero?))
 
 (defn digits
+  "Transform a number to digits sequence."
   ([n base]
    (if (zero? n) [0]
-       (loop [n (abs n) result []]
+       (loop [n (abs n) 
+              result []]
          (let [q (quot n base)]
-           (if (zero? n) result (recur q (cons (int (- n (* q base))) result)))))))
+           (if (zero? n) 
+             result 
+             (recur q (cons (int (- n (* q base))) result)))))))
   ([n]
    (digits n 10)))
 
 (defn digits->number
+  "Transform a digits sequence to a number."
   ([xs base]
    (reduce (fn [acc x]
              (+' (*' acc base) x))
@@ -30,11 +35,12 @@
   (.modPow (biginteger b) (biginteger e) (biginteger m)))
 
 (defn factorial
+  "Lazy factorials in Clojure."
   [n]
-  (cond
-    (neg? n) (throw (Exception. "factorial argument must be nonnegative."))
-    (< n 2) 1
-    :else (reduce *' (range 2 (inc n)))))
+  (if (nat-int? n)
+    (if (< n 2) 1
+        (reduce *' (range 2 (inc n))))
+    (throw (Exception. "factorial argument must be nonnegative int."))))
 
 (defn- -binomial
   "n and k must be positive."
@@ -43,6 +49,7 @@
         (*' (factorial k) (factorial (- n k)))))
 
 (defn binomial
+  "The binomial distribution."
   [n k]
   (if (neg? n)
     (let [b (-binomial (- k n 1) k)]
@@ -50,6 +57,7 @@
     (-binomial n k)))
 
 (defn gcd*
+  "(gcd a b ...) returns the greatest common divisor of (a b ...)"
   [& xs]
   (reduce (fn [acc x]
             (if (= acc 1) 1
@@ -57,17 +65,21 @@
           xs))
 
 (defn lcm*
-  [& xs]
+  "(lcm a b ...) returns the least common multiple of (a b ...)"
+  [& xs] 
   (reduce (fn [acc x]
             (lcm acc x))
           xs))
 
 (defn palindrome?
+  "Is n a palindromic number?"
   [n]
   (let [ds (digits n)]
     (= ds (reverse ds))))
 
-(defn sqrt-continued-fraction [n]
+(defn sqrt-continued-fraction
+  "find the continued fraction of sqrt of n."
+  [n]
   (let [[a0 r] (exact-integer-sqrt n)]
     (if (zero? r)
       [a0]

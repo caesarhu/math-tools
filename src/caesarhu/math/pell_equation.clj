@@ -27,6 +27,7 @@
    (find-fundamental-solution d 1)))
 
 (defn pell-solutions
+  "find the solution of pell's equation,  x^2 - dy^2 = 1 or -1"
   ([d r]
    (when-let [[x y] (find-fundamental-solution d r)]
      (let [prod (fn [[xk yk]]
