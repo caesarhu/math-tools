@@ -17,10 +17,9 @@
 (defn quadratic-root
   "find a quadratic polynomial root."
   [a b c]
-  (let [d (quadratic-discriminant a b c)]
-    (when-not (neg? d)
-      (let [sqr (math/sqrt d)
-            deno (* 2 a)]
-        (if (zero? d)
-          [(/ (- b) deno)]
-          [(/ (+ (- b) sqr) deno) (/ (- (- b) sqr) deno)])))))
+  (when-not (neg? (quadratic-discriminant a b c))
+    (let [sqr (math/sqrt (quadratic-discriminant a b c))
+          deno (* 2 a)]
+      (if (zero? sqr)
+        [(/ (- b) deno)]
+        [(/ (+ (- b) sqr) deno) (/ (- (- b) sqr) deno)]))))
