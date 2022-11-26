@@ -19,7 +19,8 @@
   [a b c]
   (when-not (neg? (quadratic-discriminant a b c))
     (let [sqr (math/sqrt (quadratic-discriminant a b c))
+          -b (- b)
           deno (* 2 a)]
-      (if (zero? sqr)
-        [(/ (- b) deno)]
-        [(/ (+ (- b) sqr) deno) (/ (- (- b) sqr) deno)]))))
+      (->> [(+ -b sqr) (- -b sqr)]
+           (map #(/ % deno))
+           set))))

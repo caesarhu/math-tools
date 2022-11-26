@@ -1,6 +1,6 @@
 (ns caesarhu.math.cycle-detection)
 
-(defn double-fn
+(defn- double-fn
   "Double function call from cycle detection."
   [f]
   (fn [x]
