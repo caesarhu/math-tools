@@ -6,8 +6,8 @@ A math library for [Project Euler](https://projecteuler.net/archives) problems.
 include a dependency on this project in your deps.edn.  
 ```edn
 {caesarhu.math/math-tools  {:git/url "https://github.com/caesarhu/math-tools"
-                            :git/tag "v0.1.17"
-                            :git/sha "269c478"}}
+                            :git/tag "v0.1.19"
+                            :git/sha "b8f90cb"}}
 ```
 
 ## Usage
