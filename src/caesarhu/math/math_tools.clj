@@ -88,3 +88,26 @@
           acc
           (let [m (- (* d a) m), d (/ (- n (* m m)) d), a (quot (+ a0 m) d)]
             (recur m d a (conj acc a))))))))
+
+(defn coprime?
+  [x y]
+  (= 1 (gcd x y)))
+
+(defn- euclid-formula
+  [m n]
+  (let [mm (* m m)
+        nn (* n n)]
+    (sort [(- mm nn) (* 2 m n) (+ mm nn)])))
+
+(defn- pythagorean-mn
+  [m]
+  (->> (range (dec m) 0 -2)
+       (filter #(coprime? m %))
+       reverse
+       (map #(euclid-formula m %))))
+
+(defn pythagorean-triplet
+  "Generate lazy pythagorean triplet sequence."
+  ([]
+   (->> (map pythagorean-mn (iterate inc 2))
+        (apply concat))))
