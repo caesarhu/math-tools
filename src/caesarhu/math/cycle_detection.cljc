@@ -4,7 +4,7 @@
   "Double function call from cycle detection."
   [f]
   (fn [x]
-    (when-let [x1 (f x)]
+    (when-let [x1 (and x (f x))]
       (f x1))))
 
 (defn floyd-cycle?
