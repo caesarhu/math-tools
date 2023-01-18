@@ -93,14 +93,14 @@
   [x y]
   (= 1 (gcd x y)))
 
-(defn- euclid-formula
+(defn euclid-formula
   [m n]
   (let [mm (* m m)
         nn (* n n)
         v [(- mm nn) (* 2 m n)]]
     [(apply min v) (apply max v) (+ mm nn)]))
 
-(defn- pythagorean-mn
+(defn pythagorean-mn
   [m]
   (->> (range (mod (inc m) 2) m 2)
        (filter #(coprime? m %))
