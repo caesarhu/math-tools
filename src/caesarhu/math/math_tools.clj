@@ -96,18 +96,25 @@
 (defn- euclid-formula
   [m n]
   (let [mm (* m m)
-        nn (* n n)]
-    (sort [(- mm nn) (* 2 m n) (+ mm nn)])))
+        nn (* n n)
+        v [(- mm nn) (* 2 m n)]]
+    [(apply min v) (apply max v) (+ mm nn)]))
 
 (defn- pythagorean-mn
   [m]
-  (->> (range (dec m) 0 -2)
+  (->> (range (mod (inc m) 2) m 2)
        (filter #(coprime? m %))
-       reverse
        (map #(euclid-formula m %))))
 
 (defn pythagorean-triplet
   "Generate lazy pythagorean triplet sequence."
   ([]
    (->> (map pythagorean-mn (iterate inc 2))
-        (apply concat))))
+        (apply concat)))
+  ([perimeter]
+   (let [min-perimeter (fn [m] (apply + (euclid-formula m (mod (inc m) 2))))]
+     (->> (iterate inc 2)
+          (take-while #(<= (min-perimeter %) perimeter))
+          (mapcat pythagorean-mn)
+          (filter #(<= (apply + %) perimeter))))))
+
