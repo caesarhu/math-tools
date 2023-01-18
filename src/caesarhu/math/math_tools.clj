@@ -108,13 +108,12 @@
 
 (defn pythagorean-triplet
   "Generate lazy pythagorean triplet sequence."
-  ([]
-   (->> (map pythagorean-mn (iterate inc 2))
-        (apply concat)))
   ([perimeter]
-   (let [min-perimeter (fn [m] (apply + (euclid-formula m (mod (inc m) 2))))]
-     (->> (iterate inc 2)
-          (take-while #(<= (min-perimeter %) perimeter))
-          (mapcat pythagorean-mn)
-          (filter #(<= (apply + %) perimeter))))))
+   (->> (map pythagorean-mn (iterate inc 2))
+        (map (fn [v] (take-while #(<= (apply + %) perimeter) v)))
+        (take-while not-empty)
+        (apply concat)))
+  ([]
+   (mapcat pythagorean-mn (iterate inc 2))))
+
 
