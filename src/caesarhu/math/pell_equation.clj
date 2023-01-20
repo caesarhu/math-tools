@@ -4,10 +4,10 @@
 (defn find-fundamental-solution
   "find the fundamental solution of pell's equation,  x^2 - dy^2 = 1 or -1"
   ([d r]
-   (when (and (and (integer? d) (integer? r))
+   (when (and (integer? r)
+              (integer? d)
               (pos? d)
-              (not (or (zero? d) (zero? r)))
-              ((complement tools/square?) d))
+              (not (or (zero? d) (zero? r) (tools/square? d))))
      (let [cf (tools/sqrt-continued-fraction d)
            as (lazy-cat cf (cycle (rest cf)))
            continued-fractions (fn []
@@ -36,7 +36,10 @@
            solutions (iterate prod [x y])]
        (cond
          (= 1 r) solutions
-         (= -1 r) (->> (partition 2 solutions)
-                       (map first))))))
+         (= -1 r) (take-nth 2 solutions)))))
   ([d]
    (pell-solutions d 1)))
+
+(comment
+  (pell-solutions 3 -1)
+  )
