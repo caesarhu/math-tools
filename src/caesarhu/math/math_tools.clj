@@ -6,6 +6,11 @@
   [n]
   (-> n exact-integer-sqrt last zero?))
 
+(defn divmod
+  "Return quotient and remainder."
+  [n d]
+  [(quot n d) (mod n d)])
+
 (defn digits
   "Transform a number to digits sequence."
   ([n base]
