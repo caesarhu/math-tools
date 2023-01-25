@@ -147,8 +147,5 @@
     :else (generalized-DN D N)))
 
 (comment
-  (integer? (/ -18 3))
-  (PQa -15 44 5)
-  (tools/sqrt-continued-fraction 19)
   (diop-DN 5 -44)
   )
