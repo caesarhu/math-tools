@@ -1,6 +1,6 @@
 (ns caesarhu.math.pell-equation
   (:require [caesarhu.math.math-tools :as tools]
-            [clojure.math.numeric-tower :refer [exact-integer-sqrt]]
+            [clojure.math.numeric-tower :refer [floor exact-integer-sqrt]]
             [caesarhu.math.quadratic-residue :refer [sqrt-mod-bf]]))
 
 (defn find-fundamental-solution
@@ -45,7 +45,8 @@
 (defn PQa
   [P_0, Q_0, D]
   (let [sqrt-D (first (exact-integer-sqrt D))
-        calc-ai (fn [p q] (quot (+ p sqrt-D) q))
+        calc-ai (fn [p q]
+                  (->> (/ (+' p sqrt-D) q) floor long))
         calc-abg (fn [ai [x1 x2]]
                    (let [xi (+' (*' ai x1) x2)]
                      [xi x1]))
@@ -123,34 +124,31 @@
 
 (defn generalized-DN
   [D N]
-  (let [fs (square-divisors N)
-        length (->> (tools/sqrt-continued-fraction D) count (* 2))]
-    (->> (for [[m f] fs
-               zz (sqrt-mod-bf D (abs m))
-               z (seq (set [zz (- zz)]))]
-           (let [pqa (PQa z (abs m) D)
-                 get-xy (fn [v] [(nth v 5) (nth v 4)])
-                 nth-pqa (fn [n] (->> n (nth pqa) get-xy))
-                 result-length (when (some #(= 1 (abs (nth % 1))) (take length pqa))
-                                 (->> (take-while #(not= 1 (abs (nth % 1))) (rest pqa)) count))]
-             (when-let [[r s] (and result-length (nth-pqa result-length))]
+  (->> (for [[m f] (square-divisors N) ; 要改為較有效率的square-divisors
+             zz (sqrt-mod-bf D (abs m)) ; 要改為較有效率的sqrt-mod
+             z (seq (set [zz (- zz)]))]
+         (let [pqa (->> (PQa z (abs m) D) (take (* 2 D))) ; 這個(* 2 D)以後需改為length運算
+               get-xy (fn [v] [(nth v 5) (nth v 4)])]
+           (when (some #(= 1 (abs (nth % 1))) pqa)
+             (let [[r s] (-> (some #(and (= 1 (abs (nth (last %) 1))) (first %)) (partition 2 1 pqa))
+                             get-xy)]
                (if (= m (-' (*' r r) (*' D s s)))
                  [(*' f r) (*' f s)]
                  (when-let [[u v] (->> (diop-DN-1 D -1) first)]
-                   [(*' f (+' (* r u) (*' v s D)))
-                    (*' f (+' (*' r v) (*' s u)))])))))
-         (remove nil?))))
+                   [(*' f (+' (*' r u) (*' v s D)))
+                    (*' f (+' (*' r v) (*' s u)))]))))))
+       (remove nil?)))
 
 (defn diop-DN
   [D N]
   (cond
     (= 1 (abs N)) (diop-DN-1 D N)
-    (< 1 (*' N N) D) (special-diop-DN D N)))
+    (< 1 (*' N N) D) (special-diop-DN D N)
+    :else (generalized-DN D N)))
 
 (comment
-  (->> (range 2 1000)
-       (remove tools/square?)
-       (map (fn [n] [(find-fundamental-solution n -1) (first (diop-DN n -1)) n]))
-       (remove #(apply = (take 2 %))))
-  (generalized-DN 5 -44)
+  (integer? (/ -18 3))
+  (PQa -15 44 5)
+  (tools/sqrt-continued-fraction 19)
+  (diop-DN 5 -44)
   )
