@@ -1,7 +1,8 @@
 (ns caesarhu.math.pell-equation
   (:require [caesarhu.math.math-tools :as tools]
             [clojure.math.numeric-tower :refer [floor exact-integer-sqrt]]
-            [caesarhu.math.quadratic-residue :refer [sqrt-mod-bf]]))
+            [caesarhu.math.quadratic-residue :refer [sqrt-mod-bf]]
+            [caesarhu.math.continued-fraction :refer [continued-fraction-periodic]]))
 
 (defn find-fundamental-solution
   "find the fundamental solution of pell's equation,  x^2 - dy^2 = 1 or -1"
@@ -127,7 +128,8 @@
   (->> (for [[m f] (square-divisors N) ; 要改為較有效率的square-divisors
              zz (sqrt-mod-bf D (abs m)) ; 要改為較有效率的sqrt-mod
              z (seq (set [zz (- zz)]))]
-         (let [pqa (->> (PQa z (abs m) D) (take (* 2 D))) ; 這個(* 2 D)以後需改為length運算
+         (let [length (->> (continued-fraction-periodic z (abs m) D) (map count) (apply +))
+               pqa (->> (PQa z (abs m) D) (take length))
                get-xy (fn [v] [(nth v 5) (nth v 4)])]
            (when (some #(= 1 (abs (nth % 1))) pqa)
              (let [[r s] (-> (some #(and (= 1 (abs (nth (last %) 1))) (first %)) (partition 2 1 pqa))
@@ -147,6 +149,6 @@
     :else (generalized-DN D N)))
 
 (comment
-  (tools/sqrt-continued-fraction 7)
+  (tools/sqrt-continued-fraction 61)
   (diop-DN 5 44)
   )

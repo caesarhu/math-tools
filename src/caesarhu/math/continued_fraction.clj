@@ -14,9 +14,9 @@
 
 (defn continued-fraction-periodic
   ([p q d s]
-   (let [[p q d s] (map long (if (neg? q)
-                               [(- p) (- q) d (- s)]
-                               [p q d s]))
+   (let [[p q d s] (if (neg? q)
+                     [(- p) (- q) d (- s)]
+                     [p q d s])
          sd (sqrt d)]
      (assert (not (neg? d)) "expected non-negative for `d`")
      (assert (not (zero? q)) "The denominator cannot be 0.")
@@ -29,20 +29,24 @@
                                     [d sd p q]))]
          (loop [[p q] [p q]
                 terms []
-                pq (sorted-set)]
+                pq {}
+                i 0]
            (if (pq [p q])
-             terms
-             (let [n (quot (+' p sd) q)
-                   p (-' (*' n q) p)]
-               (recur [p (quot (-' d (*' p p)) q)]
+             (split-at (pq [p q]) terms)
+             (let [n (let [temp (/ (+' p sd) q)]
+                       (if (neg? temp)
+                         (-> temp floor long)
+                         (quot (+' p sd) q)))
+                   new-p (-' (*' n q) p)]
+               (recur [new-p (quot (-' d (*' new-p new-p)) q)]
                       (conj terms n)
-                      (conj pq [p q])))))))))
+                      (assoc pq [p q] i)
+                      (inc i)))))))))
   ([p q d]
-   (continued-fraction-periodic p q d 1)))
+   (continued-fraction-periodic p q d 1))
+  ([d]
+   (continued-fraction-periodic 0 1 d 1)))
 
 (comment
-  (->> (apply sorted-set (range 10))
-       (split-with #(not= 5 %)))
-  (split-at 5 (range 10))
-  (continued-fraction-periodic 4 3 49)
+  (continued-fraction-periodic 3 2 7)
   )
