@@ -46,7 +46,7 @@
   [P_0, Q_0, D]
   (let [sqrt-D (first (exact-integer-sqrt D))
         calc-ai (fn [p q]
-                  (->> (/ (+' p sqrt-D) q) floor long))
+                  (->> (/ (+' p sqrt-D) q) floor))
         calc-abg (fn [ai [x1 x2]]
                    (let [xi (+' (*' ai x1) x2)]
                      [xi x1]))
@@ -147,5 +147,6 @@
     :else (generalized-DN D N)))
 
 (comment
-  (diop-DN 5 -44)
+  (tools/sqrt-continued-fraction 7)
+  (diop-DN 5 44)
   )
