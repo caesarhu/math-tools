@@ -150,5 +150,5 @@
 
 (comment
   (tools/sqrt-continued-fraction 61)
-  (diop-DN 5 44)
+  (diop-DN 5 -124)
   )

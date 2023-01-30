@@ -1,12 +1,15 @@
 (ns user
-  (:require [caesarhu.math.math-tools :refer :all]
-            [caesarhu.math.cycle-detection :as cycle]))
+  (:require [clojure.java.shell :as sh]
+            [clojure.string :as str]
+            [portal.api :as p]))
 
-(defn next-digit
-  [[n m]]
-  (when (not (zero? n))
-    [(mod (* n 10) m) m]))
+(def portal
+  ((requiring-resolve 'portal.api/open)
+   {:launcher :vs-code
+    :host (-> (sh/sh "hostname" "-I") :out (str/trim))
+    :portal.launcher/window-title (System/getProperty "user.dir")}))
 
 (comment
-  (cycle/floyd-detection next-digit [1 983])
+  (add-tap #'p/submit)
+  (tap> :hello)
   )

@@ -11,3 +11,7 @@
   (testing "floyd-cycle? test"
     (is (= [[1 983] 982] (floyd-cycle? next-digit [1 983])))
     (is (= [[1 983] 982] (floyd-detection next-digit [1 983])))))
+
+(comment
+  (floyd-detection next-digit [20 983])
+  )
