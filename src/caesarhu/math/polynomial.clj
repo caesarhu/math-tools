@@ -24,3 +24,17 @@
       (->> [(+ -b sqr) (- -b sqr)]
            (map #(/ % deno))
            set))))
+
+(defn neville
+  "Neville's algorithm for polynomial interpolation.
+   xs: x values vector
+   ys: y values vector
+   n : x^n to evaluate
+   x : x value to evaluate"
+  [xs ys n x]
+  ((memoize (fn p [i j]
+              (if (= i j) (ys i)
+                  (/ (- (*' (- x (xs j)) (p i (dec j)))
+                        (*' (- x (xs i)) (p (inc i) j)))
+                     (- (xs i) (xs j))))))
+   0 n))
