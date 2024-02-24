@@ -6,10 +6,10 @@
   [x]
   (if (integer? x) [x]
       (let [x (rationalize x)]
-        (loop [[n d] [(numerator x) (denominator x)]
+        (loop [[n d] [(long (numerator x)) (long (denominator x))]
                result []]
           (let [nn (mod n d)
-                an (-> (/ n d) floor bigint)]
+                an (quot n d)]
             (if (zero? nn)
               (conj result n)
               (recur [d nn]
@@ -57,6 +57,6 @@
                     vec))))))
 
 (comment
-  (continued-fraction 3)
-  (continued-fraction-periodic 10)
+  (continued-fraction 9/40)
+  (continued-fraction-periodic 13)
   )
