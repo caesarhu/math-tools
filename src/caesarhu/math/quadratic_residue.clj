@@ -1,6 +1,11 @@
 (ns caesarhu.math.quadratic-residue
   (:require [caesarhu.math.math-tools :refer [power-mod digits]]))
 
+(defn find-first
+  " Finds first element of collection that satisifies predicate function pred "
+  [pred coll]
+  (first (filter pred coll)))
+
 (defn sqrt-mod-map
   [p]
   (->> (for [i (range (inc (quot p 2)))
@@ -56,7 +61,31 @@
                   [result _] (cipolla-power [a 1] w p (/ (inc p) 2))]
               (sort [result (-' p result)])))))
 
+(defn tonelli [n p]
+  " Following Wikipedia https://en.wikipedia.org/wiki/Tonelli%E2%80%93Shanks_algorithm "
+  (when (= (legendre n p) 1)
+    (loop [q (dec p)                                                  ; Step 1 in Wikipedia
+           s 0]
+      (if (zero? (rem q 2))
+        (recur (quot q 2) (inc s))
+        (if (= s 1)
+          (power-mod n (quot (inc p) 4) p)
+          (let [z (find-first #(= (dec p) (legendre % p)) (range 2 p))] ; Step 2 in Wikipedia
+            (loop [M s
+                   c (power-mod z q p)
+                   t (power-mod n q p)
+                   R (power-mod n (quot (inc q) 2) p)]
+              (if (= t 1)
+                R
+                (let [i (long (find-first #(= 1 (power-mod t (bit-shift-left 1 %) p)) (range 1 M))) ; Step 3
+                      b (power-mod c (bit-shift-left 1 (- M i 1)) p)
+                      M i
+                      c (power-mod b 2 p)
+                      t (rem (* t c) p)
+                      R (rem (* R b) p)]
+                  (recur M c t R))))))))))
+
 (comment
-  (sqrt-mod-bf 64 120)
   (cipolla 3 37)
+  (tonelli 10 37)
   )
