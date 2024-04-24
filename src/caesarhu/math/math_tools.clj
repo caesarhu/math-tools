@@ -121,25 +121,34 @@
   ([]
    (mapcat pythagorean-mn (iterate inc 2))))
 
+(defn prime-factor
+  [^long limit, ^clojure.lang.PersistentVector n-vec, ^long prime]
+  (let [merge-prime (fn [^clojure.lang.PersistentVector n-vec, ^long i, ^clojure.lang.PersistentArrayMap m]
+                      (update n-vec i (partial merge-with +) m))]
+    (loop [powers (take-while #(< % limit) (iterate (partial * prime) prime))
+           n-vec (merge-prime n-vec prime {prime 1})]
+      (if (empty? powers) n-vec
+          (let [[idx next-idx] (take 2 powers)
+                v (reduce (fn [n-vec i]
+                            (let [v (reduce (fn [n-vec j]
+                                              (merge-prime n-vec (+ j i) {prime ((n-vec j) prime)}))
+                                            n-vec
+                                            (range prime (min (- limit i) (inc idx)) prime))]
+                              (if next-idx
+                                (merge-prime v next-idx {prime 1})
+                                v)))
+                          n-vec
+                          (range idx (if next-idx next-idx limit) idx))]
+            (recur (rest powers) v))))))
+
 (defn factors-range
   [^long limit]
-  (let [n-vec (atom (vec (repeat limit {})))
-        merge-prime (fn [i x] (swap! n-vec update i (partial merge-with +) x))
-        prime-factor (fn [^long prime]
-                       (merge-prime prime {prime 1})
-                       (doseq [idx (take-while #(< % limit) (iterate (partial * prime) prime))
-                               :let [next-idx (* idx prime)]]
-                         (doseq [i (range idx (min next-idx limit) idx)]
-                           (doseq [j (range prime (min (- limit i) (inc idx)) prime)]
-                             (let [src ((@n-vec j) prime)
-                                   target (+ j i)]
-                               (merge-prime target {prime src})))
-                           (when (< next-idx limit)
-                             (merge-prime next-idx {prime 1})))))]
-    (doseq [i (range 2 limit)]
-      (when (empty? (@n-vec i))
-        (prime-factor i)))
-    @n-vec))
+  (reduce (fn [n-vec prime]
+            (if (empty? (n-vec prime))
+              (prime-factor limit n-vec prime)
+              n-vec))
+          (vec (repeat limit {}))
+          (range 2 limit)))
 
 (comment
   (factors-range 33)
