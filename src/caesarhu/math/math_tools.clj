@@ -130,16 +130,13 @@
       (if (empty? powers) n-vec
           (let [[idx next-idx] (take 2 powers)
                 v (reduce (fn [n-vec i]
-                            (let [v (reduce (fn [n-vec j]
-                                              (merge-prime n-vec (+ j i) {prime ((n-vec j) prime)}))
-                                            n-vec
-                                            (range prime (min (- limit i) (inc idx)) prime))]
-                              (if next-idx
-                                (merge-prime v next-idx {prime 1})
-                                v)))
+                            (reduce (fn [n-vec j]
+                                      (merge-prime n-vec (+ j i) {prime ((n-vec j) prime)}))
+                                    n-vec
+                                    (range prime (min (- limit i) (inc idx)) prime)))
                           n-vec
                           (range idx (if next-idx next-idx limit) idx))]
-            (recur (rest powers) v))))))
+            (recur (rest powers) (if next-idx (merge-prime v next-idx {prime 1}) v)))))))
 
 (defn factors-range
   [^long limit]
