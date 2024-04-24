@@ -15,11 +15,11 @@
   "Transform a number to digits sequence."
   ([n base]
    (if (zero? n) [0]
-       (loop [n (abs n) 
+       (loop [n (abs n)
               result []]
          (let [q (quot n base)]
-           (if (zero? n) 
-             result 
+           (if (zero? n)
+             result
              (recur q (cons (int (- n (* q base))) result)))))))
   ([n]
    (digits n 10)))
@@ -34,7 +34,7 @@
    (digits->number xs 10)))
 
 (defn power-mod
-  " b^e mod m (using Java which solves some cases the pure clojure method has to be modified to tackle--i.e. with large b & e and 
+  " b^e mod m (using Java which solves some cases the pure clojure method has to be modified to tackle--i.e. with large b & e and
     calculation simplications when gcd(b, m) == 1 and gcd(e, m) == 1) "
   [b e m]
   (.modPow (biginteger b) (biginteger e) (biginteger m)))
@@ -71,7 +71,7 @@
 
 (defn lcm*
   "(lcm a b ...) returns the least common multiple of (a b ...)"
-  [& xs] 
+  [& xs]
   (reduce (fn [acc x]
             (lcm acc x))
           xs))
@@ -121,4 +121,26 @@
   ([]
    (mapcat pythagorean-mn (iterate inc 2))))
 
+(defn factors-range
+  [^long limit]
+  (let [n-vec (atom (vec (repeat limit {})))
+        merge-prime (fn [i x] (swap! n-vec update i (partial merge-with +) x))
+        prime-factor (fn [^long prime]
+                       (merge-prime prime {prime 1})
+                       (doseq [idx (take-while #(< % limit) (iterate (partial * prime) prime))
+                               :let [next-idx (* idx prime)]]
+                         (doseq [i (range idx (min next-idx limit) idx)]
+                           (doseq [j (range prime (min (- limit i) (inc idx)) prime)]
+                             (let [src ((@n-vec j) prime)
+                                   target (+ j i)]
+                               (merge-prime target {prime src})))
+                           (when (< next-idx limit)
+                             (merge-prime next-idx {prime 1})))))]
+    (doseq [i (range 2 limit)]
+      (when (empty? (@n-vec i))
+        (prime-factor i)))
+    @n-vec))
 
+(comment
+  (factors-range 33)
+  )
