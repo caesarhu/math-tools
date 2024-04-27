@@ -121,6 +121,16 @@
   ([]
    (mapcat pythagorean-mn (iterate inc 2))))
 
+(def triangle-pattern
+  [[[1, -2, 2], [2, -1, 2], [2, -2, 3]]
+   [[-2, 1, 2], [-1, 2, 2], [-2, 2, 3]],
+   [[2, 1, 2], [1, 2, 2], [2, 2, 3]]])
+
+(defn next-pythagorean-triplet
+  "Generate next pythagorean triplet from base triplet."
+  [[^long a, ^long b, ^long c]]
+  (map (fn [s] (map #(->> (map * % [a b c]) (apply +)) s)) triangle-pattern))
+
 (defn prime-factor
   [^long limit, ^clojure.lang.PersistentVector n-vec, ^long prime]
   (let [merge-prime (fn [^clojure.lang.PersistentVector n-vec, ^long i, ^clojure.lang.PersistentArrayMap m]
@@ -148,5 +158,5 @@
           (range 2 limit)))
 
 (comment
-  (factors-range 33)
+  (next-pythagorean-triplet [8 15 17])
   )
