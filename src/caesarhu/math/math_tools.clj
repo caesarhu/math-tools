@@ -118,16 +118,12 @@
 (defn pythagorean-triplet
   "Generate lazy pythagorean triplet sequence."
   ([]
-   (->> (iterate #(mapcat next-pythagorean-triplet %) [[3 4 5]])
+   (->> (iterate #(mapcat next-pythagorean-triplet %) (list (list 3 4 5)))
         (apply concat)))
   ([f]
-   (loop [base [[3 4 5]]
-          result [[3 4 5]]]
-     (if (empty? base)
-       result
-       (let [new-triplet (->> (next-pythagorean-triplet (first base))
-                              (filter f))]
-         (recur (concat new-triplet (rest base)) (concat result new-triplet)))))))
+   (->> (iterate #(->> (mapcat next-pythagorean-triplet %) (filter f)) (list (list 3 4 5)))
+        (take-while not-empty)
+        (apply concat))))
 
 (defn prime-factor
   [^long limit, ^clojure.lang.PersistentVector n-vec, ^long prime]
@@ -156,5 +152,7 @@
           (range 2 limit)))
 
 (comment
-  (pythagorean-triplet #(<= (apply + %) 100))
+  (pythagorean-triplet)
+  (time (->> (pythagorean-triplet #(<= (apply + %) 1500000))
+             count))
   )
