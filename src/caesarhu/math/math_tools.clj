@@ -98,29 +98,6 @@
   [x y]
   (= 1 (gcd x y)))
 
-(defn euclid-formula
-  [m n]
-  (let [mm (* m m)
-        nn (* n n)
-        v [(- mm nn) (* 2 m n)]]
-    [(apply min v) (apply max v) (+ mm nn)]))
-
-(defn pythagorean-mn
-  [m]
-  (->> (range (mod (inc m) 2) m 2)
-       (filter #(coprime? m %))
-       (map #(euclid-formula m %))))
-
-(defn pythagorean-triplet
-  "Generate lazy pythagorean triplet sequence."
-  ([perimeter]
-   (->> (map pythagorean-mn (iterate inc 2))
-        (map (fn [v] (take-while #(<= (apply + %) perimeter) v)))
-        (take-while not-empty)
-        (apply concat)))
-  ([]
-   (mapcat pythagorean-mn (iterate inc 2))))
-
 ; https://en.wikipedia.org/wiki/Tree_of_primitive_Pythagorean_triples
 (def triangle-pattern
   [[[2 1 -1]
@@ -137,6 +114,20 @@
   "Generate next pythagorean triplet from base(3,4,5) triplet."
   [[^long a, ^long b, ^long c]]
   (map (fn [s] (map #(->> (map * % [a b c]) (apply +)) s)) triangle-pattern))
+
+(defn pythagorean-triplet
+  "Generate lazy pythagorean triplet sequence."
+  ([]
+   (->> (iterate #(mapcat next-pythagorean-triplet %) [[3 4 5]])
+        (apply concat)))
+  ([f]
+   (loop [base [[3 4 5]]
+          result [[3 4 5]]]
+     (if (empty? base)
+       result
+       (let [new-triplet (->> (next-pythagorean-triplet (first base))
+                              (filter f))]
+         (recur (concat new-triplet (rest base)) (concat result new-triplet)))))))
 
 (defn prime-factor
   [^long limit, ^clojure.lang.PersistentVector n-vec, ^long prime]
@@ -165,5 +156,5 @@
           (range 2 limit)))
 
 (comment
-  (next-pythagorean-triplet [5 12 13])
+  (pythagorean-triplet #(<= (apply + %) 100))
   )
