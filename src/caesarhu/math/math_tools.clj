@@ -121,9 +121,13 @@
    (->> (iterate #(mapcat next-pythagorean-triplet %) (list (list 3 4 5)))
         (apply concat)))
   ([f]
-   (->> (iterate #(->> (mapcat next-pythagorean-triplet %) (filter f)) (list (list 3 4 5)))
-        (take-while not-empty)
-        (apply concat))))
+   (loop [base (list (list 3 4 5))
+          result (list (list 3 4 5))]
+     (if (empty? base)
+       result
+       (let [new-triplets (->> (next-pythagorean-triplet (first base))
+                               (filter f))]
+         (recur (apply conj (rest base) new-triplets) (apply conj result new-triplets)))))))
 
 (defn prime-factor
   [^long limit, ^clojure.lang.PersistentVector n-vec, ^long prime]
@@ -153,6 +157,6 @@
 
 (comment
   (pythagorean-triplet)
-  (time (->> (pythagorean-triplet #(<= (apply + %) 1500000))
+  (time (->> (pythagorean-triplet #(<= (last %) 1000000000))
              count))
   )
