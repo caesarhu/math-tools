@@ -121,13 +121,20 @@
   ([]
    (mapcat pythagorean-mn (iterate inc 2))))
 
+; https://en.wikipedia.org/wiki/Tree_of_primitive_Pythagorean_triples
 (def triangle-pattern
-  [[[1, -2, 2], [2, -1, 2], [2, -2, 3]]
-   [[-2, 1, 2], [-1, 2, 2], [-2, 2, 3]],
-   [[2, 1, 2], [1, 2, 2], [2, 2, 3]]])
+  [[[2 1 -1]
+    [-2 2 2]
+    [-2 1 3]]
+   [[2 1 1]
+    [2 -2 2]
+    [2 -1 3]]
+   [[2 -1 1]
+    [2 2 2]
+    [2 1 3]]])
 
 (defn next-pythagorean-triplet
-  "Generate next pythagorean triplet from base triplet."
+  "Generate next pythagorean triplet from base(3,4,5) triplet."
   [[^long a, ^long b, ^long c]]
   (map (fn [s] (map #(->> (map * % [a b c]) (apply +)) s)) triangle-pattern))
 
@@ -158,5 +165,5 @@
           (range 2 limit)))
 
 (comment
-  (next-pythagorean-triplet [8 15 17])
+  (next-pythagorean-triplet [5 12 13])
   )
