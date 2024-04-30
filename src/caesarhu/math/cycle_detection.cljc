@@ -44,22 +44,18 @@
 
 (defn floyd-detection-seq
   "Floyd Cycle Detection Algorithm.
-   if s is cycled, returns [(head...) (cycled-seq)], else returns nil."
-  ([s]
-   (floyd-detection-seq s =))
-  ([s comparator]
-   (let [tortoise (drop 1 s)
-         hare (->> (take-nth 2 s) (drop 1))]
-     (when-let [[_ _ i] (->> (map vector tortoise hare (range))
-                            (some #(and (apply comparator (take 2 %)) %)))]
-       (let [[start _ j] (->> (map vector s (drop i tortoise) (range))
-                              (some #(and (apply comparator (take 2 %)) %)))
-             [head cycled-seq] (split-at j s)]
-         [head (cons start (take-while #(not (comparator start %)) (rest cycled-seq)))])))))
-
-(comment
-  (defn tt
-    [n]
-    (concat (repeatedly n  #(rand-int 100000)) (cycle (range 7))))
-  (floyd-detection-seq (tt 5))
-  )
+   if s is cycled, returns [hare counter], else returns nil."
+  [s]
+  (let [next2 (fn [ss]
+                (when (some? (first ss))
+                  (when (some? (first (next ss)))
+                    (nnext ss))))]
+    (loop [s1 (next s)
+           s2 (next2 s)
+           counter 1]
+      (let [tortoise (first s1)
+            hare (first s2)]
+        (cond
+          (nil? hare) nil
+          (= tortoise hare) [hare counter]
+          :else (recur (next s1) (next2 s2) (inc counter)))))))
